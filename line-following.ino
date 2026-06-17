@@ -43,8 +43,8 @@ int baseSpeed = 160;
 int maxSpeed = 200;
 int lastError = 0;
 
-long i = 0;
-int maxI = 100;
+int igl = 0;
+int maxIgl = 100;
 
 void setup() {
   #ifdef USE_ESP32
@@ -116,11 +116,11 @@ void loop() {
 
   // - PID calculation -
   int p = error;
-  i = i + error; // I added integral's logic just in case if I need to use :D
-  i = constrain(i, -maxI, maxI);
+  igl = igl + error; // I added integral's logic just in case if I need to use :D
+  igl = constrain(igl, -maxIgl, maxIgl);
   int d = error - lastError;
 
-  int motorSpeedAdjustment = (Kp * p) + (Ki * i) + (Kd * d);
+  int motorSpeedAdjustment = (Kp * p) + (Ki * igl) + (Kd * d);
   lastError = error;
 
   int leftMotorSpeed = baseSpeed + motorSpeedAdjustment;
