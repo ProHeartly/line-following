@@ -20,7 +20,7 @@ float Ki = 0.0;
 float Kd = 20.0;
 
 int baseSpeed = 160;
-int maxSpeed = 230;
+int maxSpeed = 200;
 int lastError = 0;
 
 
@@ -40,9 +40,75 @@ void setup() {
   pinMode(IN3, OUTPUT);
   pinMode(IN4, OUTPUT);
 
-  
+  // forward initially
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN2, LOW);
+  digitalWrite(IN3, HIGH);
+  digitalWrite(IN4, LOW);
+
+  // RANDMO SERIAL MSG - not really random thooo.. I LOVE PROJECT: HAIL MARRY!!!
+  Serial.println("Amaze Amaze Amaze!!!");
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+  int s1 = digitalRead(S1);
+  int s2 = digitalRead(S2);
+  int s3 = digitalRead(S3);
+  int s4 = digitalRead(S4);
+  int s5 = digitalRead(S5);
+
+  int error = 0;
+
+  // initial logic. NOTE: I MIGHT CHANGE THIS IN FUTURE cuz IK MY LOGIC ISN'T damn SOLID
+  // - THis when bot is dead straight -
+  if (s1 == 0 && s2 == 0 && s3 == 1 && s4 == 0 && s5 == 0) error = 0;
+
+  // - left -
+  else if (s1 == 0 && s2 == 1 && s3 == 1 && s4 == 0 && s5 == 0) error = -1;  // SLIGHT LEFT
+  else if (s1 == 0 && s2 == 1 && s3 == 0 && s4 == 0 && s5 == 0) error = -2;  // little LEFT
+  else if (s1 == 1 && s2 == 1 && s3 == 0 && s4 == 0 && s5 == 0) error = -3;  // mid LEFT
+  else if (s1 == 1 && s2 == 0 && s3 == 0 && s4 == 0 && s5 == 0) error = -4;  // HARD LEFT
+
+  // - right -
+  else if (s1 == 0 && s2 == 0 && s3 == 1 && s4 == 1 && s5 == 0) error = 1;  // SLIGHT RIGHT
+  else if (s1 == 0 && s2 == 0 && s3 == 0 && s4 == 1 && s5 == 0) error = 2;  // little RIGHT
+  else if (s1 == 0 && s2 == 0 && s3 == 0 && s4 == 1 && s5 == 1) error = 3;  // mid RIGHT
+  else if (s1 == 0 && s2 == 0 && s3 == 0 && s4 == 0 && s5 == 1) error = 4;  // HARD RIgHT
+
+  // - intersection -
+  else if (s1 == 1 && s2 == 1 && s3 == 1 && s4 == 1 && s5 == 1) error = 0;
+
+  else if (s1 == 0 && s2 == 0 && s3 == 0 && s4 == 0 && s5 == 0) {
+    if (lastError < 0) {
+      error = -5;
+    } else if (lastError > 0) {
+      error = 5;
+    }
+  }
+
+  // - PD calculation -
+  int p = error;
+  int d = error - lastError;
+
+  int motorSpeedAdjustment = (Kp * p) + (Kd * d);
+  lastError = error;
+
+  int leftMotorSpeed = baseSpeed + motorSpeedAdjustment;
+  int rightMotorSpeed = baseSpeed - motorSpeedAdjustment;
+
+  leftMotorSpeed = constrain(leftMotorSpeed, 0, maxSpeed);
+  rightMotorSpeed = constrain(rightMotorSpeed, 0, maxSpeed);
+
+  // - Motor movement -
+  moveMotors(leftMotorSpeed, rightMotorSpeed);
+}
+
+void moveMotors(int leftMotorSpeed, int rightMotorSpeed) {
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN2, LOW);
+  analogWrite(ENA, leftMotorSpeed);
+
+  digitalWrite(IN3, HIGH);
+  digitalWrite(IN4, LOW);
+  analogWrite(ENB, rightMotorSpeed);
 }
