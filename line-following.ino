@@ -5,32 +5,32 @@
 
 // -------------- CONFIG ---------------
 #ifdef USE_ESP32
-  #define S1 32
-  #define S2 33
-  #define S3 34
-  #define S4 35
-  #define S5 36
+#define S1 32
+#define S2 33
+#define S3 34
+#define S4 35
+#define S5 36
 
-  #define ENA 18
-  #define ENB 19
-  #define IN1 5
-  #define IN2 17
-  #define IN3 16
-  #define IN4 4
+#define ENA 18
+#define ENB 19
+#define IN1 5
+#define IN2 17
+#define IN3 16
+#define IN4 4
 
 #else
-  #define S1 A0
-  #define S2 A1
-  #define S3 A2
-  #define S4 A3
-  #define S5 A4
+#define S1 A0
+#define S2 A1
+#define S3 A2
+#define S4 A3
+#define S5 A4
 
-  #define ENA 5
-  #define ENB 6
-  #define IN1 7
-  #define IN2 8
-  #define IN3 9
-  #define IN4 10
+#define ENA 5
+#define ENB 6
+#define IN1 7
+#define IN2 8
+#define IN3 9
+#define IN4 10
 #endif
 
 // ----------- VARIABLES ------------
@@ -51,8 +51,6 @@ void setup() {
     Serial.begin(115200);
   #else
     Serial.begin(9600);
-    pinMode(ENA, OUTPUT);
-    pinMode(ENB, OUTPUT);
   #endif
 
   // Sensors
@@ -63,6 +61,8 @@ void setup() {
   pinMode(S5, INPUT);
 
   // Motor
+  pinMode(ENA, OUTPUT);
+  pinMode(ENB, OUTPUT);
   pinMode(IN1, OUTPUT);
   pinMode(IN2, OUTPUT);
   pinMode(IN3, OUTPUT);
@@ -116,15 +116,17 @@ void loop() {
 
   // - PID calculation -
   int p = error;
-  igl = igl + error; // I added integral's logic just in case if I need to use :D
-  igl = constrain(igl, -maxIgl, maxIgl);
+  if (Ki != 0) {
+    igl = igl + error;  // I added integral's logic just in case if I need to use :D
+    igl = constrain(igl, -maxIgl, maxIgl);
+  }
   int d = error - lastError;
 
-  int motorSpeedAdjustment = (Kp * p) + (Ki * igl) + (Kd * d);
+  float motorSpeedAdjustment = (Kp * p) + (Ki * igl) + (Kd * d);
   lastError = error;
 
-  int leftMotorSpeed = baseSpeed + motorSpeedAdjustment;
-  int rightMotorSpeed = baseSpeed - motorSpeedAdjustment;
+  int leftMotorSpeed = baseSpeed + (int)motorSpeedAdjustment;
+  int rightMotorSpeed = baseSpeed - (int)motorSpeedAdjustment;
 
   leftMotorSpeed = constrain(leftMotorSpeed, 0, maxSpeed);
   rightMotorSpeed = constrain(rightMotorSpeed, 0, maxSpeed);
