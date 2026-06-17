@@ -1,7 +1,9 @@
 // I'm not sure if I'm going to use esp32 devkit or arduino UNO for the actual project.. so I'm going to keep part for both of them :p
+// Imma use #ifdef thingy for using same code for esp and arduino.
+
+// #define USE_ESP32 // Uncomment this line for esp32
 
 
-// arduino---------------------------------------------------------------
 #define S1 A0
 #define S2 A1
 #define S3 A2
@@ -23,6 +25,8 @@ int baseSpeed = 160;
 int maxSpeed = 200;
 int lastError = 0;
 
+long i = 0;
+int maxI = 100;
 
 void setup() {
   Serial.begin(9600);
@@ -86,11 +90,13 @@ void loop() {
     }
   }
 
-  // - PD calculation -
+  // - PID calculation -
   int p = error;
+  i = i + error; // I added integral's logic just in case if I need to use :D
+  i = constrain(i, -maxI, maxI);
   int d = error - lastError;
 
-  int motorSpeedAdjustment = (Kp * p) + (Kd * d);
+  int motorSpeedAdjustment = (Kp * p) + (Ki * i) + (Kd * d);
   lastError = error;
 
   int leftMotorSpeed = baseSpeed + motorSpeedAdjustment;
