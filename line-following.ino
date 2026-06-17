@@ -3,19 +3,37 @@
 
 // #define USE_ESP32 // Uncomment this line for esp32
 
+// -------------- CONFIG ---------------
+#ifdef USE_ESP32
+  #define S1 32
+  #define S2 33
+  #define S3 34
+  #define S4 35
+  #define S5 36
 
-#define S1 A0
-#define S2 A1
-#define S3 A2
-#define S4 A3
-#define S5 A4
+  #define ENA 18
+  #define ENB 19
+  #define IN1 5
+  #define IN2 17
+  #define IN3 16
+  #define IN4 4
 
-#define ENA 5
-#define ENB 6
-#define IN1 7
-#define IN2 8
-#define IN3 9
-#define IN4 10
+#else
+  #define S1 A0
+  #define S2 A1
+  #define S3 A2
+  #define S4 A3
+  #define S5 A4
+
+  #define ENA 5
+  #define ENB 6
+  #define IN1 7
+  #define IN2 8
+  #define IN3 9
+  #define IN4 10
+#endif
+
+// ----------- VARIABLES ------------
 
 float Kp = 35.0;
 float Ki = 0.0;
@@ -29,16 +47,22 @@ long i = 0;
 int maxI = 100;
 
 void setup() {
-  Serial.begin(9600);
+  #ifdef USE_ESP32
+    Serial.begin(115200);
+  #else
+    Serial.begin(9600);
+    pinMode(ENA, OUTPUT);
+    pinMode(ENB, OUTPUT);
+  #endif
 
+  // Sensors
   pinMode(S1, INPUT);
   pinMode(S2, INPUT);
   pinMode(S3, INPUT);
   pinMode(S4, INPUT);
   pinMode(S5, INPUT);
 
-  pinMode(ENA, OUTPUT);
-  pinMode(ENB, OUTPUT);
+  // Motor
   pinMode(IN1, OUTPUT);
   pinMode(IN2, OUTPUT);
   pinMode(IN3, OUTPUT);
