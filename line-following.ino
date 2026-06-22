@@ -2,6 +2,7 @@
 // Imma use #ifdef thingy for using same code for esp and arduino.
 // NVM we are going to use UNO so lets remove esp32 block
 // Added some movement logic separate for going straight and turns
+//  Now time for PID and speed tuning :D 
 
 // #define USE_ESP32 // Uncomment this line for esp32
 
@@ -22,13 +23,13 @@
 
 // ----------- VARIABLES ------------
 
-float Kp = 10.0;
+float Kp = 90.0;
 float Ki = 0.0;
-float Kd = 17.0;
+float Kd = 43.0;
 
-int baseSpeed = 70;
-int straightSpeed = 150;
-int maxSpeed = 200;
+int baseSpeed = 80;
+int straightSpeed = 120;
+int maxSpeed = 100;
 int lastError = 0;
 
 int igl = 0;
