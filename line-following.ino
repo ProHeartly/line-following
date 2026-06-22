@@ -1,6 +1,7 @@
 // I'm not sure if I'm going to use esp32 devkit or arduino UNO for the actual project.. so I'm going to keep part for both of them :p
 // Imma use #ifdef thingy for using same code for esp and arduino.
 // NVM we are going to use UNO so lets remove esp32 block
+// Added some movement logic separate for going straight and turns
 
 // #define USE_ESP32 // Uncomment this line for esp32
 
@@ -26,6 +27,7 @@ float Ki = 0.0;
 float Kd = 17.0;
 
 int baseSpeed = 70;
+int straightSpeed = 150;
 int maxSpeed = 200;
 int lastError = 0;
 
@@ -107,8 +109,11 @@ void loop() {
   float motorSpeedAdjustment = (Kp * p) + (Ki * igl) + (Kd * d);
   lastError = error;
 
-  int leftMotorSpeed = baseSpeed + (int)motorSpeedAdjustment;
-  int rightMotorSpeed = baseSpeed - (int)motorSpeedAdjustment;
+  // dynamic speed for when the bot is going stright
+  int centerSpeed = map(abs(error), 0, 5, straightSpeed, baseSpeed);
+
+  int leftMotorSpeed = centerSpeed + (int)motorSpeedAdjustment;
+  int rightMotorSpeed = centerSpeed - (int)motorSpeedAdjustment;
 
   leftMotorSpeed = constrain(leftMotorSpeed, 0, maxSpeed);
   rightMotorSpeed = constrain(rightMotorSpeed, 0, maxSpeed);
