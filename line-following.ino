@@ -4,6 +4,8 @@
 // Added some movement logic separate for going straight and turns
 //  Now time for PID and speed tuning :D 
 
+// First time making LFR and we participated in a LFR competition and we achieved 2nd position!! yoloooo!
+
 // #define USE_ESP32 // Uncomment this line for esp32
 
 // -------------- CONFIG ---------------
